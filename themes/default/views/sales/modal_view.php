@@ -451,6 +451,13 @@
                                 <span class="hidden-sm hidden-xs"><?= lang('knk_invoice') ?></span>
                             </a>
                         </div>
+                        <div class="btn-group">
+                            <a href="<?= site_url('sales/knk_invoice_landscape/' . $inv->id) ?>" target="_blank"
+                               class="tip btn btn-primary" title="<?= lang('knk_invoice_landscape') ?>">
+                                <i class="fa fa-print"></i>
+                                <span class="hidden-sm hidden-xs"><?= lang('knk_invoice_landscape') ?></span>
+                            </a>
+                        </div>
 
                         <!--
                         <div class="btn-group">
