@@ -286,6 +286,7 @@
                             + "<td>" + (opt.get(0).outerHTML) + "</td>"
 							+ "<td><span class='qoh_finish text-center'>"+ (ui.item.qoh == undefined?text: formatMoney(ui.item.qoh)) +"</span></td>"
 	        				+ "<td><input type='text' required='required' class='quantity form-control input-tip' value='' name='convert_to_items_qty[]' /></td>"
+                            + "<td><input type='text' required='required' class='quantity_percent form-control input-tip' value='' name='convert_to_items_qty_percent[]' /></td>"
 	        				+ '<td><i style="cursor:pointer;" title="Remove" id="1449892339552" class="fa fa-times tip pointer sldel"></i></td>'
 						+ "</tr>";
                 	$('#tbody-convert-to-items').append(rows);
@@ -436,6 +437,7 @@
                         + "<td>" + (opt.get(0).outerHTML) + "</td>"
 						+ "<td><div class='qoh_raw'>"+ (data[i].row.qoh == undefined ? 0 : formatQuantity2(data[i].row.qoh)) +"</div></td>"
                         + "<td><input type='text' required='required' class='quantity qty_input qty_to form-control input-tip' value='"+(qty_deduct)+"' name='convert_from_items_qty[]' /><input type='hidden' required='required' class='quantity hidden_qty_input form-control input-tip' value='"+(qty_deduct)+"' name='hidden_convert_from_items_qty[]' /></td>"
+                        + "<td><input type='text' required='required' class='quantity qty_input_percent form-control input-tip' value='' name='convert_from_items_qty_percent[]' /></td>"
                         + '<td><i style="cursor:pointer;" title="Remove" id="1449892339552" class="fa fa-times tip pointer sldel"></i></td>'
 						+ "</tr>";
 						
@@ -480,9 +482,45 @@
 					
                 }				
 			}			
-            calculate();
+            calculate();convertQTY();
         }
-		
+		function  convertQTY() {
+            $(".qty_input_percent").change(function (e) {
+                var percent = 0;
+                $(".qty_input_percent").each(function () {
+                    var convert = $(this).val();
+                    if (convert.indexOf("%") !== -1)
+                    {
+                        con         = convert.split("%");
+                        percent     += parseFloat(con[0]?con[0]:0)/100;
+                    }else{
+                        percent     += parseFloat(convert?convert:0);
+                    }
+                });
+                if(percent>1){
+                    var convert = $(this).val();
+                    if (convert.indexOf("%") !== -1)
+                    {
+                        con         = convert.split("%");
+                        con         = parseFloat(con[0]?con[0]:0)/100;
+                    }else{
+                        con         = parseFloat(convert?convert:0);
+                    }
+                    $(this).val((formatDecimal(Math.abs(1-(percent-con)))*100)+'%');
+
+                }
+                var convert = $(this).val();
+                var tr      = $(this).parent().parent();
+                var qty_out = $('.qty_output').val();
+                if (convert.indexOf("%") !== -1)
+                {
+                    var con = convert.split("%");
+                    tr.find(".qty_input").val(con[0]*qty_out/100);
+                }else{
+                    tr.find(".qty_input").val(convert*qty_out);
+                }
+            });
+        }
 		function calculate(){
 			var boms_method = '<?= $Settings->boms_method?>';
 			$(".qty_input").keyup(function(){
@@ -542,7 +580,21 @@
 				var total = formatMoney(cost * qty);
 				tr.find('.total_raw').html(total);
             });				
-			
+			$(".qty_output").change(function () {
+                var qty_out    = $(this).val();
+                $(".qty_input_percent").each(function () {
+                    var tr          = $(this).parent().parent();
+                    var convert     = $(this).val();
+                    if(convert.indexOf("%") !== -1)
+                    {
+                        var con = convert.split("%");
+                        tr.find(".qty_input").val(con[0]*qty_out/100);
+                    }else{
+                        tr.find(".qty_input").val(convert*qty_out);
+                    }
+
+                });
+            });
 			$(".qty_output").keyup(function(){
 		        var list 		  = [];	
 				var sumQty 		  = 0;	
@@ -836,10 +888,11 @@
 								<table id="cfTable" class="table items table-striped table-bordered table-condensed table-hover">
 									<thead>
 										<tr>
-											<th class="col-md-7"><?= lang("product_name") . " (" . lang("product_code") . ")"; ?></th>
+											<th class="col-md-5"><?= lang("product_name") . " (" . lang("product_code") . ")"; ?></th>
 											<th class="col-md-2"  style="width: 250px;"><?= lang("unit"); ?></th>
 											<th class="col-md-1"  style="width: 250px;"><?= lang("qoh"); ?></th>
 											<th class="col-md-2"><?= lang("quantity"); ?></th>
+                                            <th class="col-md-2"><?= lang("quantity_%"); ?></th>
 											<th style="width: 30px !important; text-align: center;">
 												<i class="fa fa-trash-o" style="opacity:0.5; filter:alpha(opacity=50);"></i>
 											</th>
@@ -872,7 +925,7 @@
 								<table id="ctTable" class="table items table-striped table-bordered table-condensed table-hover">
 									<thead>
 										<tr>
-											<th class="col-md-7"><?= lang("product_name") . " (" . lang("product_code") . ")"; ?></th>
+											<th class="col-md-5"><?= lang("product_name") . " (" . lang("product_code") . ")"; ?></th>
 											<th class="col-md-2"  style="width: 250px;"><?= lang("unit"); ?></th>
 											<th class="col-md-1"  style="width: 250px;"><?= lang("qoh"); ?></th>
 											<th class="col-md-2"><?= lang("quantity"); ?></th>

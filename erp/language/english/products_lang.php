@@ -256,6 +256,7 @@ $lang['check_product']			                    = "Check product";
 $lang['quantity_updated']			                = "Quantity Updated";
 $lang['item_no_cost'] = "Item no cost cannot do adjustment.";
 $lang['adjustment_by'] = "Adjusted by";
+$lang['quantity_%'] = "Quantity (%)";
 
 
 
