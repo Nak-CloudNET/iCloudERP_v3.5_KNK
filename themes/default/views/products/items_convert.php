@@ -186,6 +186,7 @@
                             + "<td>" + (opt.get(0).outerHTML) + "</td>"
 							+ "<td><span class='qoh_raw text-center'>"+ (ui.item.qoh == undefined ? text : ui.item.qoh) +"</span></td>"
 	        				+ "<td><input type='text' required='required' class='quantity qty_input form-control input-tip' value='' name='convert_from_items_qty[]' /></td>"
+                        + "<td><input type='text' required='required' class='quantity qty_input_percent form-control input-tip' value='' name='convert_from_items_qty_percent[]' /></td>"
 	        				+ '<td><i style="cursor:pointer;" title="Remove" id="1449892339552" class="fa fa-times tip pointer sldel"></i></td>'
 						+ "</tr>";
                 	$('#tbody-convert-from-items').append(rows);
