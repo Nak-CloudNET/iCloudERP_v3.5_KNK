@@ -503,7 +503,11 @@
         }
 		function  convertQTY() {
             $(".qty_input_percent").change(function (e) {
-                $(this).val($(this).val()+"%")
+                if ($(this).val().indexOf("%") == -1)
+                {
+                    $(this).val($(this).val()+"%")
+                }
+
                 var percent = 0;
                 $(".qty_input_percent").each(function () {
                     var convert = $(this).val();
