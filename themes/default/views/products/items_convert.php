@@ -486,7 +486,7 @@
             calculate();convertQTY();convertAQTY();
         }
         function convertAQTY(){
-            $('.qty_input').change(function () {
+            $('.qty_input').keyup(function () {
                 var tr      = $(this).parent().parent();
                 var qty_out = $('.qty_output').val();
                 var sum=0;
@@ -597,7 +597,7 @@
 				var total = formatMoney(cost * qty);
 				tr.find('.total_raw').html(total);
             });				
-			$(".qty_output").change(function () {
+			$(".qty_output").keyup(function () {
                 var qty_out    = $(this).val();
                 $(".qty_input_percent").each(function () {
                     var tr          = $(this).parent().parent();
