@@ -483,7 +483,23 @@
 					
                 }				
 			}			
-            calculate();convertQTY();
+            calculate();convertQTY();convertAQTY();
+        }
+        function convertAQTY(){
+            $('.qty_input').change(function () {
+                var tr      = $(this).parent().parent();
+                var qty_out = $('.qty_output').val();
+                var sum=0;
+                $('.qty_input').each(function () {
+                    sum += parseFloat($(this).val());
+                });
+                if(sum > qty_out)
+                {
+                    var new_val     = formatPurDecimal($(this).val()-(sum-(qty_out)));
+                    $(this).val(new_val);
+                }
+                tr.find(".qty_input_percent").val($(this).val()*100/qty_out+'%');
+            });
         }
 		function  convertQTY() {
             $(".qty_input_percent").change(function (e) {
@@ -596,9 +612,11 @@
 
                 });
             });
+			//BLock by RAVY //
+            /*
 			$(".qty_output").keyup(function(){
-		        var list 		  = [];	
-				var sumQty 		  = 0;	
+		        var list 		  = [];
+				var sumQty 		  = 0;
 				var get 		  = 0;
 				var qtyHidden 	  = 0;
 				var curProductQty = 0;
@@ -608,8 +626,8 @@
 					var gqty 	= tr.find(".hidden_qty_input").val();
 					var pcode 	= tr.find(".procode").val();
 					var obj 	= {procode:pcode,qty:gqty};
-					list.push(obj);	
-					sumQty 		= sumQty + Number(gqty);						
+					list.push(obj);
+					sumQty 		= sumQty + Number(gqty);
 				});
 				$('.hide_quantity').each(function(){
 					qtyHidden 		+= parseFloat($(this).val());
@@ -622,15 +640,15 @@
 					var i			= 0;
 					$('.qty_input').each(function() {
 						var temp 	= Number(list[i].qty);
-						temp 		= 0;				
+						temp 		= 0;
 						$(this).val(formatPurDecimal(temp));
 						i++;
-					});		
+					});
 				}
 				else
 				{
 					if(boms_method == 1){
-						newQty 		= curProductQty / qtyHidden;	
+						newQty 		= curProductQty / qtyHidden;
 					}
 					var i 			= 0;
 					$('.qty_input').each(function() {
@@ -639,19 +657,19 @@
 						if(boms_method == 1){
 							newTemp = formatPurDecimal(newQty)*temp;
 							$(this).val(formatPurDecimal(newTemp));
-						}			
-						
+						}
+
 						i++;
-					});		
+					});
 				}
-				
+
 				var shipping = 0;
 				var avg_cost = 0;
 				var tr 	 	 = $(this).parent().parent();
 				var qty  	 = $(this).val();
 				var f_cost   = tr.find('.cost_finish').val();
 				var total_f	 = f_cost * qty;
-				
+
 				//============== Get Total Raw Cost ================//
 				var total_raw_cost = 0;
 				var qty_raw        = new Array();
@@ -666,31 +684,32 @@
 					cost_arr[a]	 = $(this).html();
 					a++;
 				});
-				
+
 				//====================== End =======================//
-				
+
 				//============== Get Total Raw Cost ================//
 				var cost_finish = 0;
 				$('.cost_finish').each(function(){
 					cost_finish += parseFloat($(this).val());
 				});
-				
+
 				$.each(qty_raw, function(i,value){
 					total_raw_cost += parseFloat(cost_arr[i]) * parseFloat(value);
 				});
 				//====================== End =======================//
-				
+
 				//================== Get All Qty ===================//
 				var count = $('.qty_count').length;
 				//====================== End =======================//
-				
+
 				shipping 	= (total_f / cost_finish);
 				avg_cost 	= (total_raw_cost * (shipping > 0? shipping:1) )/(shipping > 0? qty:count);
 				total_cost 	= avg_cost * qty;
 				tr.find('.cost_finish').html(formatMoney(avg_cost));
 				tr.find('.total_finish').html(formatMoney(total_cost));
 				$(".qty_input").trigger('change');
-			});		
+			});
+			*/
 		}
 		
 		$('#bth_convert_items').click(function(e){
