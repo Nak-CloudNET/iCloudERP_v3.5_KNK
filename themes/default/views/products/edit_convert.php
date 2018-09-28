@@ -155,6 +155,7 @@
 	        				+ ui.item.name+"("+ ui.item.code +")</td>"
                             + "<td>" + (opt.get(0).outerHTML) + "</td>"
 	        				+ "<td><input type='text' required='required' class='quantity form-control input-tip' value='' name='convert_from_items_qty[]' /></td>"
+                            + "<td><input type='text' required='required' class='quantity qty_input_percent form-control input-tip' value='' name='convert_from_items_qty_percent[]' /></td>"
 	        				+ '<td><i style="cursor:pointer;" title="Remove" id="1449892339552" class="fa fa-times tip pointer sldel"></i></td>'
 						+ "</tr>";
                 	$('#tbody-convert-from-items').append(rows);
@@ -229,6 +230,7 @@
 	        				+ ui.item.name+"</td>"
                             + "<td>" + (opt.get(0).outerHTML) + "</td>"
 	        				+ "<td><input type='text' required='required' class='quantity form-control input-tip' value='' name='convert_to_items_qty[]' /></td>"
+                            + "<td><input type='text' required='required' class='quantity qty_input_percent form-control input-tip' value='' name='convert_from_items_qty_percent[]' /></td>"
 	        				+ '<td><i style="cursor:pointer;" title="Remove" id="1449892339552" class="fa fa-times tip pointer sldel"></i></td>'
 						+ "</tr>";
                 	$('#tbody-convert-to-items').append(rows);
@@ -361,10 +363,11 @@
                                            class="table items table-striped table-bordered table-condensed table-hover">
                                         <thead>
                                         <tr>
-                                            <th class="col-md-7"><?= lang("product_name") . " (" . lang("product_code") . ")"; ?></th>
+                                            <th class="col-md-5"><?= lang("product_name") . " (" . lang("product_code") . ")"; ?></th>
                                             <th class="col-md-2"  style="width: 250px;"><?= lang("unit"); ?></th>
-											<th class="col-md-1"  style="width: 250px;"><?= lang("qoh"); ?></th>
-                                            <th class="col-md-3"><?= lang("quantity"); ?></th>
+											<th class="col-md-2"  style="width: 250px;"><?= lang("qoh"); ?></th>
+                                            <th class="col-md-2"><?= lang("quantity"); ?></th>
+                                            <th class="col-md-2"><?= lang("quantity_%"); ?></th>
                                             <th style="width: 30px !important; text-align: center;"><i
                                                     class="fa fa-trash-o"
                                                     style="opacity:0.5; filter:alpha(opacity=50);"></i></th>
@@ -404,8 +407,11 @@
 												</td>
 												<td><div class='qoh_raw text-center'><?php echo $convert_item->qoh; ?></div></td>
 												<td>
-													<input type="text" required="required" class="quantity form-control input-tip" value="<?php echo $convert_item->quantity; ?>" name="convert_from_items_qty[]" />
+													<input type="text" required="required" class="quantity input_qty form-control input-tip" value="<?php echo $convert_item->quantity; ?>" name="convert_from_items_qty[]" />
 												</td>
+                                                <td>
+                                                    <input type="text" required="required" class="quantity input_qty_percent  form-control input-tip" value="" name="convert_from_items_qty_percent[]" />
+                                                </td>
 												<td>
 													<i style="cursor:pointer;" title="Remove" id="1449892339552" class="fa fa-times tip pointer sldel"></i>
 												</td>
@@ -484,7 +490,7 @@
 											<td class='text-center'>
 												<span class='qoh_finish text-center'><?php echo $convert_item->qoh; ?></span>
 											</td>
-											<td><input type="text" required="required" class="quantity form-control input-tip" value="<?php echo $convert_item->quantity; ?>" name="convert_to_items_qty[]" /></td>
+											<td><input type="text" required="required" class="quantity output_qty form-control input-tip" value="<?php echo $convert_item->quantity; ?>" name="convert_to_items_qty[]" /></td>
 											<td><i style="cursor:pointer;" title="Remove" id="1449892339552" class="fa fa-times tip pointer sldel"></i></td>
 										</tr>
 										<?php
@@ -802,5 +808,82 @@
 $(document).on('click', '.sldel', function () {
     var row = $(this).closest('tr');
     row.remove();
+});
+
+$(document).ready(function () {
+   var output_qty   = $('.output_qty').val();
+   $('.input_qty').each(function () {
+      var tr    = $(this).parent().parent();
+      tr.find('.input_qty_percent').val($(this).val()/output_qty*100+"%");
+   });
+    $('.input_qty_percent').change(function () {
+        if ($(this).val().indexOf("%") == -1)
+        {
+            $(this).val($(this).val()+"%")
+        }
+
+        var percent = 0;
+        $(".input_qty_percent").each(function () {
+            var convert = $(this).val();
+            if (convert.indexOf("%") !== -1)
+            {
+                con         = convert.split("%");
+                percent     += parseFloat(con[0]?con[0]:0)/100;
+            }else{
+                percent     += parseFloat(convert?convert:0);
+            }
+        });
+        if(percent>1){
+            var convert = $(this).val();
+            if (convert.indexOf("%") !== -1)
+            {
+                con         = convert.split("%");
+                con         = parseFloat(con[0]?con[0]:0)/100;
+            }else{
+                con         = parseFloat(convert?convert:0);
+            }
+            $(this).val((formatDecimal(Math.abs(1-(percent-con)))*100)+'%');
+
+        }
+        var convert = $(this).val();
+        var tr      = $(this).parent().parent();
+        var qty_out = $('.output_qty').val();
+        if (convert.indexOf("%") !== -1)
+        {
+            var con = convert.split("%");
+            tr.find(".input_qty").val(con[0]*qty_out/100);
+        }else{
+            tr.find(".input_qty").val(convert*qty_out);
+        }
+    });
+    $('.input_qty').keyup(function () {
+        var tr      = $(this).parent().parent();
+        var qty_out = $('.output_qty').val();
+        var sum=0;
+        $('.input_qty').each(function () {
+            sum += parseFloat($(this).val());
+        });
+        if(sum > qty_out)
+        {
+            var new_val     = formatPurDecimal($(this).val()-(sum-(qty_out)));
+            $(this).val(new_val);
+        }
+        tr.find(".input_qty_percent").val($(this).val()*100/qty_out+'%');
+    });
+    $(".output_qty").keyup(function () {
+        var qty_out    = $(this).val();
+        $(".input_qty_percent").each(function () {
+            var tr          = $(this).parent().parent();
+            var convert     = $(this).val();
+            if(convert.indexOf("%") !== -1)
+            {
+                var con = convert.split("%");
+                tr.find(".input_qty").val(con[0]*qty_out/100);
+            }else{
+                tr.find(".input_qty").val(convert*qty_out);
+            }
+
+        });
+    });
 });
 </script>
