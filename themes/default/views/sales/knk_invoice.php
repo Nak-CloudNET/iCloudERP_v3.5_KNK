@@ -113,6 +113,7 @@
             <p class="text-right">លេខ: <strong><?= $invs->reference_no; ?></strong></p>
             <p class="text-right">កាលបរិច្ឆេទ: <strong><?= $this->erp->hrsd($invs->date); ?></strong></p>
             <p class="text-right">អតិថិជន: <strong><?= $invs->customer; ?></strong></p>
+            <p class="text-right">Group Area: <strong><?= $invs->areas_group; ?></strong></p>
         </div>
     </div>
 
