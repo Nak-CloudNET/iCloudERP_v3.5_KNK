@@ -1,4 +1,12 @@
 <!DOCTYPE html>
+<?php
+$cus_count=$this->db->query("select count(*) as count from erp_sales where customer_id={$invs->customer_id}");
+$count=0;
+if($cus_count->row()){
+    $count = $cus_count->row();
+}
+
+?>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -97,10 +105,13 @@
 </style>
 <body>
 <div class="container" style="width: 780px;">
-    <div class="row logo" style="padding: 15px">
+    <div class="row logo" style="padding: 13px">
         <?php if($biller->address){?>
         <div class="col-sm-4 col-xs-4">
             <p>អាស័យដ្ឋាន: <?= $biller->address; ?></p>
+            <?php if ($invs->saleman) {?>
+                <p>អ្នកលក់: <?= $invs->saleman; ?></p>
+            <?php }  ?>
         </div>
         <?php }  ?>
         <div class="col-sm-4 col-xs-4 text-center">
@@ -112,7 +123,13 @@
         <div class="col-sm-4 col-xs-4">
             <p class="text-right">លេខ: <strong><?= $invs->reference_no; ?></strong></p>
             <p class="text-right">កាលបរិច្ឆេទ: <strong><?= $this->erp->hrsd($invs->date); ?></strong></p>
-            <p class="text-right">អតិថិជន: <strong><?= $invs->customer; ?></strong></p>
+            <?php if ($invs->customer){ ?>
+                <p class="text-right">អតិថិជន: <strong><?= $invs->customer; ?></strong></p>
+            <?php }  ?>
+            <?php if ($invs->areas_group){?>
+                <p class="text-right">តំបន់: <strong><?= $invs->areas_group; ?></strong></p>
+            <?php }  ?>
+            <p class="text-right">លេីកទី: <strong style="font-size: 16px;"><?= $count->count; ?></strong></p>
         </div>
     </div>
 

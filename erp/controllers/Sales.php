@@ -18444,6 +18444,7 @@ function invoice_concrete_angkor($id=null)
         $this->load->view($this->theme . 'sales/knk_invoice', $this->data);
     }
 
+
 	function primo_invoice($id=null) 
 	{
         $this->erp->checkPermissions('add', true, 'sales');
