@@ -218,27 +218,48 @@
         if ($erow < 13) {
             $k = 11 - $erow;
             for ($j = 1; $j <= $k; $j++) {
-                if ($totalDisc != 0) {
-                    echo '<tr class="border">
-                                        <td height="26px" style="text-align: center; vertical-align: middle">' . $no . '</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>';
+                if($totalDisc && $totalItemTax) {
+                    echo  '<tr class="border" >
+                                   <td height="34px" style="text-align: center; vertical-align: middle;border-left: 1px solid black !important;border-right: 1px solid black;border-top: 1px solid white;  "></td>
+                                    <td style="border-right: 1px solid black;border-top: 1px solid white; "></td>
+                                    <td style="border-right: 1px solid black;border-top: 1px solid white; "></td>
+                                    <td style="border-right: 1px solid black;border-top: 1px solid white; "></td>
+                                    <td style="border-right: 1px solid black;border-top: 1px solid white; "></td>
+                                    <td style="border-right: 1px solid black;border-top: 1px solid white; "></td>
+                                    <td style="border-right: 1px solid black;border-top: 1px solid white; "></td>
+                                    <td style="border-right: 1px solid black;border-top: 1px solid white; "></td>
+                                    <td style="border-right: 1px solid black;border-top: 1px solid white; "></td>
+                                   
+                                    
+                                </tr>';
+
                 } else {
-                    echo '<tr class="border">
-                                        <td height="26px" style="text-align: center; vertical-align: middle">' . $no . '</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>';
+                    if ($totalItemTax || $totalDisc){
+
+                        echo '<tr class="border" >
+                                   <td height="34px" style="text-align: center; vertical-align: middle;border-left: 1px solid black !important;border-right: 1px solid black;border-top: 1px solid white;  "></td>
+                                    <td style="border-right: 1px solid black;border-top: 1px solid white; "></td>
+                                    <td style="border-right: 1px solid black;border-top: 1px solid white; "></td>
+                                    <td style="border-right: 1px solid black;border-top: 1px solid white; "></td>
+                                    <td style="border-right: 1px solid black;border-top: 1px solid white; "></td>
+                                    <td style="border-right: 1px solid black;border-top: 1px solid white; "></td>
+                                    <td style="border-right: 1px solid black;border-top: 1px solid white; "></td>
+                                    <td style="border-right: 1px solid black;border-top: 1px solid white; "></td>
+                                    
+                                    
+                                </tr>';
+                    }else {
+                        echo  '<tr class="border" >
+                                    <td height="34px" style="text-align: center; vertical-align: middle;border-left: 1px solid black !important;border-right: 1px solid black;border-top: 1px solid white;  "></td>
+                                    <td style="border-right: 1px solid black;border-top: 1px solid white; "></td>
+                                    <td style="border-right: 1px solid black;border-top: 1px solid white; "></td>
+                                    <td style="border-right: 1px solid black;border-top: 1px solid white; "></td>
+                                    <td style="border-right: 1px solid black;border-top: 1px solid white; "></td>
+                                    <td style="border-right: 1px solid black;border-top: 1px solid white; "></td>
+                                   
+                                    
+                                </tr>';
+                    }
                 }
                 $no++;
             }
@@ -247,9 +268,12 @@
         </tbody>
         <tfoot>
         <?php
-        $row = 1;
-        $col = 3;
+        $row = 3;
+        $col = 2;
         if ($totalDisc != 0) {
+            $col = 4;
+        }
+        if ($totalItemTax != 0){
             $col = 4;
         }
         if ($invs->grand_total != $invs->total) {
@@ -257,7 +281,7 @@
         }
         if ($invs->order_discount != 0) {
             $row++;
-            $col = 4;
+            $col = 3;
         }
         if ($invs->shipping != 0) {
             $row++;
@@ -267,8 +291,12 @@
             $row++;
             $col = 4;
         }
+        if ($totalItemTax && $totalDisc) {
+
+            $col =5;
+        }
         if ($invs->paid != 0 && $invs->deposit != 0) {
-            $row += 4;
+            $row += 3;
         } elseif ($invs->paid != 0 && $invs->deposit == 0) {
             $row += 2;
         } elseif ($invs->paid == 0 && $invs->deposit != 0) {
