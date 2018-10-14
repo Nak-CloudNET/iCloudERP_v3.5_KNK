@@ -273,6 +273,7 @@ if($cus_count->row()){
                                     <td style="border-right: 1px solid black;border-top: 1px solid white; "></td>
                                     <td style="border-right: 1px solid black;border-top: 1px solid white; "></td>
                                     <td style="border-right: 1px solid black;border-top: 1px solid white; "></td>
+                                    <td style="border-right: 1px solid black;border-top: 1px solid white; "></td>
                                    
                                     
                                 </tr>';
@@ -286,7 +287,7 @@ if($cus_count->row()){
         <tfoot>
         <?php
         $row = 3;
-        $col = 2;
+        $col = 3;
         if ($totalDisc != 0) {
             $col = 4;
         }
