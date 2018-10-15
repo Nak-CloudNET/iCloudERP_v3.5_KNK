@@ -284,12 +284,8 @@ if($cus_count->row()){
         <?php
         $row = 3;
         $col = 2;
-        if ($totalDisc != 0) {
-            $col = 3;
-        }
-        if ($totalItemTax != 0){
-            $col = 3;
-        }
+
+
         if ($invs->grand_total != $invs->total) {
             $row++;
         }
@@ -308,7 +304,14 @@ if($cus_count->row()){
         if ($totalItemTax && $totalDisc) {
 
             $col =4;
+        }elseif ($totalItemTax != 0 && $totalDisc ==0){
+            $col = 3;
+        }elseif ($totalDisc != 0 && $totalItemTax == 0 ){
+            $col = 3;
+        }else{
+            $col = 2;
         }
+
         if ($invs->paid != 0 && $invs->deposit != 0) {
             $row += 3;
         } elseif ($invs->paid != 0 && $invs->deposit == 0) {
