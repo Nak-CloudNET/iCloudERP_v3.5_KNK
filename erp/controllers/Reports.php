@@ -23283,12 +23283,13 @@ class Reports extends MY_Controller
 			$this->excel->getActiveSheet()->SetCellValue('B1', lang('date'));
 			$this->excel->getActiveSheet()->SetCellValue('C1', lang('reference'));
 			$this->excel->getActiveSheet()->SetCellValue('D1', lang('name'));
-			$this->excel->getActiveSheet()->SetCellValue('E1', lang('qty'));
-			$this->excel->getActiveSheet()->SetCellValue('F1', lang('unit'));
-			$this->excel->getActiveSheet()->SetCellValue('G1', lang('cost_price'));
-			$this->excel->getActiveSheet()->SetCellValue('H1', lang('amount'));
-			$this->excel->getActiveSheet()->getStyle('A1'. $row.':H1'.$row)->getFont()->setBold(true);
-			$this->excel->getActiveSheet()->getStyle('A1:H1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+			$this->excel->getActiveSheet()->SetCellValue('E1', lang('warehouse'));
+			$this->excel->getActiveSheet()->SetCellValue('F1', lang('qty'));
+			$this->excel->getActiveSheet()->SetCellValue('G1', lang('unit'));
+			$this->excel->getActiveSheet()->SetCellValue('H1', lang('unit_cost'));
+			$this->excel->getActiveSheet()->SetCellValue('I1', lang('amount'));
+			$this->excel->getActiveSheet()->getStyle('A1'. $row.':I1'.$row)->getFont()->setBold(true);
+			$this->excel->getActiveSheet()->getStyle('A1:I1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 			$row = 2;
 			$grand = 0 ;
 			$gqty = 0;
@@ -23322,8 +23323,8 @@ class Reports extends MY_Controller
 				$this->excel->getActiveSheet()->mergeCells('A'.$row.':H'.$row);
 				$this->excel->getActiveSheet()->getStyle('A'. $row.':H'.$row)->getFont()->setBold(true);
 				
-				$this->db->select("product_id,product_name,erp_purchase_items.quantity,net_unit_cost,erp_purchases.supplier_id,reference_no,erp_purchase_items.date,transaction_type,option_id,unit,net_shipping")->join("erp_purchases","erp_purchases.id = erp_purchase_items.purchase_id","LEFT")->join("erp_products","erp_products.id = erp_purchase_items.product_id","LEFT")->where("erp_purchase_items.transaction_type = 'PURCHASE'");
-
+				$this->db->select("product_id,product_name,erp_purchase_items.quantity,net_unit_cost,erp_purchases.supplier_id,reference_no,erp_purchase_items.date,transaction_type,option_id,unit,net_shipping,warehouses.name as warehouse_name")->join("erp_purchases","erp_purchases.id = erp_purchase_items.purchase_id","LEFT")->join("erp_products","erp_products.id = erp_purchase_items.product_id","LEFT")->where("erp_purchase_items.transaction_type = 'PURCHASE'");
+                    $this->db->join('warehouses','warehouses.id = purchases.warehouse_id');
 					if($reference){
 						$this->db->where("reference_no",$reference);
 					}
@@ -23368,10 +23369,11 @@ class Reports extends MY_Controller
 						$this->excel->getActiveSheet()->SetCellValue('B' . $row, $this->erp->hrsd($row1->date));
 						$this->excel->getActiveSheet()->SetCellValue('C' . $row, $row1->reference_no);
 						$this->excel->getActiveSheet()->SetCellValue('D' . $row, $row1->product_name);
-						$this->excel->getActiveSheet()->SetCellValue('E' . $row, $vqty);
-						$this->excel->getActiveSheet()->SetCellValue('F' . $row, $unit_name);
-						$this->excel->getActiveSheet()->SetCellValue('G' . $row, $totalshipping);
-						$this->excel->getActiveSheet()->SetCellValue('H' . $row, abs($row1->quantity)*$totalshipping);
+						$this->excel->getActiveSheet()->SetCellValue('E' . $row, $row1->warehouse_name);
+						$this->excel->getActiveSheet()->SetCellValue('F' . $row, $vqty);
+						$this->excel->getActiveSheet()->SetCellValue('G' . $row, $unit_name);
+						$this->excel->getActiveSheet()->SetCellValue('H' . $row, $totalshipping);
+						$this->excel->getActiveSheet()->SetCellValue('I' . $row, abs($row1->quantity)*$totalshipping);
 						$tqty+=$vqty;
 						$amount+=(abs($row1->quantity)*$totalshipping);
 						
@@ -23379,12 +23381,12 @@ class Reports extends MY_Controller
 					}
 				}
 				$this->excel->getActiveSheet()->SetCellValue('A' . $row, 'Total >> '.$sup->supplier);
-				$this->excel->getActiveSheet()->SetCellValue('E' . $row, $tqty);
-				$this->excel->getActiveSheet()->SetCellValue('H' . $row, $this->erp->formatMoney($amount));
-                $this->excel->getActiveSheet()->getStyle('H'. $row)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+				$this->excel->getActiveSheet()->SetCellValue('F' . $row, $tqty);
+				$this->excel->getActiveSheet()->SetCellValue('I' . $row, $this->erp->formatMoney($amount));
+                $this->excel->getActiveSheet()->getStyle('I'. $row)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
 				$this->excel->getActiveSheet()->mergeCells('A'.$row.':D'.$row);
-				$this->excel->getActiveSheet()->getStyle('A'. $row.':H'.$row)->getFont()->setBold(true);
-				$this->excel->getActiveSheet()->getStyle('E'.$row. ':H'.$row)->getBorders()->getTop()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+				$this->excel->getActiveSheet()->getStyle('A'. $row.':I'.$row)->getFont()->setBold(true);
+				$this->excel->getActiveSheet()->getStyle('F'.$row. ':I'.$row)->getBorders()->getTop()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
 				$grand +=$amount;
 				$gqty +=$tqty;
 				$row++;
@@ -23392,13 +23394,13 @@ class Reports extends MY_Controller
 				}
 			}
 			$this->excel->getActiveSheet()->SetCellValue('A' . $row, 'Grand Total');
-			$this->excel->getActiveSheet()->SetCellValue('E' . $row, $gqty);
-			$this->excel->getActiveSheet()->SetCellValue('H' . $row, $this->erp->formatMoney($grand));
-            $this->excel->getActiveSheet()->getStyle('H'. $row)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+			$this->excel->getActiveSheet()->SetCellValue('F' . $row, $gqty);
+			$this->excel->getActiveSheet()->SetCellValue('I' . $row, $this->erp->formatMoney($grand));
+            $this->excel->getActiveSheet()->getStyle('I'. $row)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
             $this->excel->getActiveSheet()->mergeCells('A'.$row.':D'.$row);
 			$this->excel->getActiveSheet()->mergeCells('A'.$row.':D'.$row);
-			$this->excel->getActiveSheet()->getStyle('A'. $row.':H'.$row)->getFont()->setBold(true);
-			$this->excel->getActiveSheet()->getStyle('E'.$row. ':H'.$row)->getBorders()->getTop()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+			$this->excel->getActiveSheet()->getStyle('A'. $row.':I'.$row)->getFont()->setBold(true);
+			$this->excel->getActiveSheet()->getStyle('F'.$row. ':I'.$row)->getBorders()->getTop()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
 
 			$this->excel->getActiveSheet()->getColumnDimension('A')->setWidth(20);
 			$this->excel->getActiveSheet()->getColumnDimension('B')->setWidth(15);
@@ -23408,6 +23410,7 @@ class Reports extends MY_Controller
 			$this->excel->getActiveSheet()->getColumnDimension('F')->setWidth(15);
 			$this->excel->getActiveSheet()->getColumnDimension('G')->setWidth(15);
 			$this->excel->getActiveSheet()->getColumnDimension('H')->setWidth(15);
+			$this->excel->getActiveSheet()->getColumnDimension('I')->setWidth(15);
 			$filename = lang('Product Supplier'). date('Y_m_d_H_i_s');
 			$this->excel->getDefaultStyle()->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
 			if ($pdf) {
